@@ -23,6 +23,10 @@ server.get("/set", (req, res) => {
 });
 server.get("/fetch", (req, res) => {
   res.send(`a = ${a}`)
+});
+server.get("/urls", (req, res) => {
+  const templatteVars = {urls: urlDatabase};
+  res.render("urls_index.ejs", templatteVars);
 })
 
 server.listen(port, () => {
