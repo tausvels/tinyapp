@@ -3,6 +3,7 @@ const express = require ("express");
 
 const port = 8080;
 const server = express();
+server.set("view engine", "ejs"); //Setting up the server view engine to use ejs.
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -16,6 +17,13 @@ server.get("/urls.json", (req, res) => {
 server.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
+server.get("/set", (req, res) => {
+  const a = 1;
+  res.send(`a = ${a}`)
+});
+server.get("/fetch", (req, res) => {
+  res.send(`a = ${a}`)
+})
 
 server.listen(port, () => {
   console.log(`Server listening to port: ${port}`);
