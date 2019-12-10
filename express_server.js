@@ -38,8 +38,11 @@ server.get("/urls/:shortURL", (req, res) => {
   const templateVars = {shortURL: req.params.shortURL, longURL:"http://www.lighthouselabs.ca"};
   res.render("urls_show", templateVars);
 });
-
-
+//----- POST REQUESTS ------////
+server.post("/urls", (req, res) => {
+  console.log(`${req.body}`);
+  res.send(`Ok!!`);
+})
 
 server.listen(port, () => {
   console.log(`Server listening to port: ${port}`);
