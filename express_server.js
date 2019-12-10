@@ -54,6 +54,11 @@ server.post(`/urls`, (req, res) => {
   console.log(urlDatabase);
   res.redirect(`/urls/${shortURL}`);
 });
+server.post(`/urls/:shortURL/delete`, (req, res) => {
+  let shortCode = req.params.shortURL; 
+  delete urlDatabase[shortCode];
+  res.redirect(`/urls`)
+})
 
 server.listen(port, () => {
   console.log(`Server listening to port: ${port}`);
