@@ -27,12 +27,17 @@ server.get("/fetch", (req, res) => {
 server.get("/urls", (req, res) => {
   const templateVars = {urls: urlDatabase};
   res.render("urls_index", templateVars);
-})
+});
+server.get("/urls/new", (req, res) => {
+  res.render("urls_new")
+});
 server.get("/urls/:shortURL", (req, res) => {
   const templateVars = {shortURL: req.params.shortURL, longURL:"http://www.lighthouselabs.ca"};
   res.render("urls_show", templateVars);
-})
+});
+
+
 
 server.listen(port, () => {
   console.log(`Server listening to port: ${port}`);
-})
+});
