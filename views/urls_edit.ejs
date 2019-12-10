@@ -13,7 +13,7 @@
   <body>
       <%- include("./partials/_header") %>
     <main style="margin: 1em;">
-      <h3>Update TinyURL</h3>
+      <h3>Update LongURL for TinyCode: <%= shortCode %></h3>
       <form class="form-inline" action="/urls/<%= shortCode %>" method="POST">
         <div class="form-group mb-2">
           <label for="longURL">Existing Long URL:</label>

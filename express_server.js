@@ -54,7 +54,7 @@ server.get(`/urls/edit/:shortURL`, (req, res) => {
 // FOR EDIT POST REQUEST
 server.post(`/urls/:shortURL`, (req, res) => {
   const editedURL = {
-    shortURL: req.body.shortURL,
+    shortURL: req.params.shortURL,
     longUrl: req.body.longURL
   };
 

@@ -10,3 +10,5 @@ function generateRandomString() {
 }
 
 console.log(generateRandomString());
+
+action="/urls/edit:<%= url %>"
