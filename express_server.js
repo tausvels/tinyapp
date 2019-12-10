@@ -19,7 +19,7 @@ server.get("/hello", (req, res) => {
 });
 server.get("/set", (req, res) => {
   const a = 1;
-  res.send(`a = ${a}`)
+  res.send(`a = ${a}`);
 });
 server.get("/fetch", (req, res) => {
   res.send(`a = ${a}`)
@@ -27,6 +27,10 @@ server.get("/fetch", (req, res) => {
 server.get("/urls", (req, res) => {
   const templateVars = {urls: urlDatabase};
   res.render("urls_index", templateVars);
+})
+server.get("/urls/:shortURL", (req, res) => {
+  const templateVars = {shortURL: req.params.shortURL, longURL:"http://www.lighthouselabs.ca"};
+  res.render("urls_show", templateVars);
 })
 
 server.listen(port, () => {
