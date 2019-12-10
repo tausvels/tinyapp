@@ -35,13 +35,19 @@ server.get("/urls/new", (req, res) => {
   res.render("urls_new")
 });
 server.get("/urls/:shortURL", (req, res) => {
-  const templateVars = {shortURL: req.params.shortURL, longURL:"http://www.lighthouselabs.ca"};
+  const templateVars = {shortURL: req.params.shortURL, longURL:urlDatabase[req.params.shortURL]};
   res.render("urls_show", templateVars);
 });
 //----- POST REQUESTS ------////
-server.post("/urls", (req, res) => {
-  console.log(`${req.body}`);
-  res.send(`Ok!!`);
+server.post(`/urls`, (req, res) => {
+  //console.log(`${req.body}`);
+  const longURL = "http://www."+req.body.longURL;
+  console.log("ONLY LONG URL ==>",longURL);
+  const shortURL = generateRandomString();
+  //console.log(shortURL);
+  urlDatabase[shortURL] = longURL;
+  console.log(urlDatabase)
+  res.redirect(`/urls/${shortURL}`)
 })
 
 server.listen(port, () => {
@@ -49,13 +55,20 @@ server.listen(port, () => {
 });
 
 function generateRandomString() {
-  const charArr = ("abcdefghijklmnopqrstuvwxyz").split("");
-  const charsToGenerate = 6;
+  const char = ("abcdefghijklmnopqrstuvwxyz");
+  const num = ("0123456789");
+  const charsToGenerate = 2;
   let randStringArr = [];
   for (let i = 0; i < charsToGenerate; i++) {
     let randNumber = Math.floor(Math.random() * 26);
-    let randChar = charArr[randNumber];
+    let randChar = (char.split(""))[randNumber];
     randStringArr.push(randChar);
+    randNumber = Math.floor(Math.random() * 26);
+    let randCharCap = ((char.toUpperCase()).split(""))[randNumber];
+    randStringArr.push(randCharCap);
+    randNumber = Math.floor(Math.random() * 10);
+    let randNum = (num.split(""))[randNumber];
+    randStringArr.push(randNum);
   }
   return randStringArr.join("");
 }
