@@ -1,9 +1,12 @@
 console.clear();
 const express = require ("express");
+const bodyParser = require("body-parser");
 
 const port = 8080;
 const server = express();
+
 server.set("view engine", "ejs"); //Setting up the server view engine to use ejs.
+server.use(bodyParser.urlencoded({extended: true}));
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
