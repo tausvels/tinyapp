@@ -17,16 +17,6 @@ server.get("/urls.json", (req, res) => {
   //res.send(`<h1>Server says Hi! from port: ${port}</h1>`);
   res.json(urlDatabase);
 });
-// server.get("/hello", (req, res) => {
-//   res.send("<html><body>Hello <b>World</b></body></html>\n");
-// });
-// server.get("/set", (req, res) => {
-//   const a = 1;
-//   res.send(`a = ${a}`);
-// });
-// server.get("/fetch", (req, res) => {
-//   res.send(`a = ${a}`);
-// });
 server.get("/urls", (req, res) => {
   const templateVars = {urls: urlDatabase};
   res.render("urls_index", templateVars);
@@ -45,20 +35,39 @@ server.get("/u/:shortURL", (req, res) => {
 });
 //----- POST REQUESTS ------////
 server.post(`/urls`, (req, res) => {
-  //console.log(`${req.body}`);
-  const longURL = "http://www." + req.body.longURL;
-  console.log("ONLY LONG URL ==>",longURL);
+  const longURL = "http://" + req.body.longURL;
+  //console.log("ONLY LONG URL ==>",longURL);
   const shortURL = generateRandomString();
-  //console.log(shortURL);
   urlDatabase[shortURL] = longURL;
-  console.log(urlDatabase);
   res.redirect(`/urls/${shortURL}`);
 });
+// FOR EDIT GET REQUEST//
+server.get(`/urls/edit/:shortURL`, (req, res) => {
+  const shortURL = req.params.shortURL;
+  const longURL = urlDatabase[shortURL];
+  const templateVars = {
+    shortCode: shortURL,
+    longCode: longURL
+  };
+  res.render(`urls_edit`, templateVars);
+});
+// FOR EDIT POST REQUEST
+server.post(`/urls/:shortURL`, (req, res) => {
+  const editedURL = {
+    shortURL: req.body.shortURL,
+    longUrl: req.body.longURL
+  };
+
+  urlDatabase[editedURL.shortURL] = editedURL.longUrl;
+
+  res.redirect("/urls/");
+});
+// FOR DELETE //
 server.post(`/urls/:shortURL/delete`, (req, res) => {
-  let shortCode = req.params.shortURL; 
+  let shortCode = req.params.shortURL;
   delete urlDatabase[shortCode];
-  res.redirect(`/urls`)
-})
+  res.redirect(`/urls`);
+});
 
 server.listen(port, () => {
   console.log(`Server listening to port: ${port}`);
