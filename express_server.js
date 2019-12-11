@@ -18,23 +18,34 @@ const urlDatabase = {
 };
 // ------- GET REQUESTS ----------------
 // ------- GET REQUEST USER REGISTRATION -------
-server.get("/user_registration", (req, res) => {
+server.get("/register", (req, res) => {
   res.render(`user_registration`);
 })
+// ------- GET REQUEST USER LOGIN -------------
+server.get(`/login`, (req, res) => {
+  res.render(`login`, {error: null });
+})
 server.get("/urls", (req, res) => {
-  const username = req.cookies["username"];
-  const templateVars = {urls: urlDatabase, username: username};
-  console.log(username);
+  //const username = req.cookies["username"];
+  const user_id = req.cookies["user_id"];
+  const userObj = findUserByProp(user_id);
+  console.log(userObj);
+  const templateVars = {urls: urlDatabase, userObj: userObj};
+  console.log(userObj);
   res.render("urls_index", templateVars);
 });
 server.get("/urls/new", (req, res) => {
-  const username = req.cookies["username"];
-  const templateVars = {username: username};
+  const user_id = req.cookies["user_id"];
+  const userObj = findUserByProp(user_id);
+  //const username = req.cookies["username"];
+  const templateVars = {userObj: userObj};
   res.render("urls_new", templateVars);
 });
 server.get("/urls/:shortURL", (req, res) => {
-  const username = req.cookies["username"];
-  const templateVars = {shortURL: req.params.shortURL, longURL:urlDatabase[req.params.shortURL], username: username};
+  const user_id = req.cookies["user_id"];
+  const userObj = findUserByProp(user_id);
+  //const username = req.cookies["username"];
+  const templateVars = {shortURL: req.params.shortURL, longURL:urlDatabase[req.params.shortURL], userObj: userObj};
   res.render("urls_show", templateVars);
 });
 server.get("/u/:shortURL", (req, res) => {
@@ -48,7 +59,7 @@ server.post(`/register`, (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
   if (email !== "" && password !== ""){
-    if (!findUserByEmail(email)){ // if returns false/null
+    if (!findUserByProp(email)){ // if returns false/null
       userData[id] = {
         id: id,
         email: email,
@@ -68,14 +79,22 @@ server.post(`/register`, (req, res) => {
 });
 //----- POST REQUESTS LOGIN------////
 server.post(`/login`, (req, res) => {
-  const userName = req.body.username;
-  console.log(userName);
-  res.cookie(`username`, userName);
-  res.redirect(`/urls`);
+  const enteredEmail = req.body.email;
+  const enteredPassword = req.body.password;
+  console.log(enteredEmail);
+  if(findUserByProp(enteredEmail) && (findUserByProp(enteredEmail)).password === enteredPassword){
+      const userId = (findUserByProp(enteredEmail)).id;
+      res.cookie(`user_id`, userId);
+      res.redirect(`/urls`);
+  }else{
+    res.status(403)
+    .send(`${res.statusCode}`);
+    //res.render('login', { error: `INCORRECT EMAIL OR PASSWORD!`})  ==> Returns on the login page for incorrect data
+  }
 })
 //----- POST REQUESTS LOGOUT------////
 server.post(`/logout`, (req, res) => {
-  res.clearCookie(`username`);
+  res.clearCookie(`user_id`);
   res.redirect(`/urls`);
 })
 //----- POST REDIRECT AFTER CREATE NEW TINY URL ---- ///
@@ -90,10 +109,13 @@ server.post(`/urls`, (req, res) => {
 server.get(`/urls/edit/:shortURL`, (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL];
+  const user_id = req.cookies["user_id"];
+  const userObj = findUserByProp(user_id);
   const templateVars = {
     shortCode: shortURL,
     longCode: longURL,
-    username: req.cookies[`username`]
+    user_id: req.cookies[`user_id`],
+    userObj: userObj
   };
   res.render(`urls_edit`, templateVars);
 });
@@ -129,11 +151,13 @@ const generateRandomString = function() {
   return randString.join("");
 };
 
-const findUserByEmail = function (email) {
+const findUserByProp = function (queryParam) {
   for(const id in userData){
     const user = userData[id];
-    if(user.email === email){
-      return user
+    for (let props in user) {
+      if(user[props] === queryParam){
+        return user;
+      }
     }
   }
   return null

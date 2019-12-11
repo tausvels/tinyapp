@@ -8,16 +8,25 @@ const users = {
     id: "user2RandomID", 
     email: "user2@example.com", 
     password: "dishwasher-funk"
+  },
+  "SYRsGE" : {
+    id: "SYRsGE",
+    email: "whatever@email.com",
+    password: "something"
   }
 }
 
-const findUserByEmail = function (email) {
+const findUserByEmail = function (queryParam) {
   for(const id in users){
     const user = users[id];
-    if(user.email === email){
-      return user
+    for (let props in user) {
+      if(user[props] === queryParam){
+        return user;
+      }
     }
   }
   return null
 }
-console.log(findUserByEmail("user2@example.com"))
+const queryParam = "SYRsGE";
+const output = (findUserByEmail(queryParam));
+console.log(output.email)
