@@ -10,14 +10,4 @@ const users = {
     password: "dishwasher-funk"
   }
 }
-
-const findUserByEmail = function (email) {
-  for(const id in users){
-    const user = users[id];
-    if(user.email === email){
-      return user
-    }
-  }
-  return null
-}
-console.log(findUserByEmail("user2@example.com"))
+module.exports = { users };

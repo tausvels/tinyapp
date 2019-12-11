@@ -4,6 +4,7 @@ const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
 
 
+const userData = {};
 const port = 8080;
 const server = express();
 
@@ -20,10 +21,6 @@ const urlDatabase = {
 server.get("/user_registration", (req, res) => {
   res.render(`user_registration`);
 })
-server.get("/urls.json", (req, res) => {
-  //res.send(`<h1>Server says Hi! from port: ${port}</h1>`);
-  res.json(urlDatabase);
-});
 server.get("/urls", (req, res) => {
   const username = req.cookies["username"];
   const templateVars = {urls: urlDatabase, username: username};
@@ -44,6 +41,30 @@ server.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
   const longURL = urlDatabase[shortURL];
   res.redirect(longURL);
+});
+//----- POST REQUESTS REGISTER------//
+server.post(`/register`, (req, res) => {
+  const id = generateRandomString();
+  const email = req.body.email;
+  const password = req.body.password;
+  if (email !== "" && password !== ""){
+    if (!findUserByEmail(email)){ // if returns false/null
+      userData[id] = {
+        id: id,
+        email: email,
+        password: password
+      }
+      res.cookie(`user_id`, id);
+      console.log(userData);
+      res.redirect(`/urls`);
+    } else {
+      res.status(404)
+      .send(`${res.statusCode}`)
+    }
+  } else {
+    res.status(404)
+    .send(`${res.statusCode}`)
+  }
 });
 //----- POST REQUESTS LOGIN------////
 server.post(`/login`, (req, res) => {
@@ -82,10 +103,8 @@ server.post(`/urls/:shortURL`, (req, res) => {
     shortURL: req.params.shortURL,
     longUrl: req.body.longURL
   };
-
-  urlDatabase[editedURL.shortURL] = editedURL.longUrl;
-
-  res.redirect("/urls/");
+    urlDatabase[editedURL.shortURL] = editedURL.longUrl;
+    res.redirect("/urls/");
 });
 // FOR DELETE //
 server.post(`/urls/:shortURL/delete`, (req, res) => {
@@ -98,6 +117,7 @@ server.listen(port, () => {
   console.log(`Server listening to port: ${port}`);
 });
 
+// -------- HELPER FUNCTION ------------- //
 const generateRandomString = function() {
   const charsArr = ("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789").split("");
   const charsToGenerate = 6;
@@ -108,3 +128,13 @@ const generateRandomString = function() {
   }
   return randString.join("");
 };
+
+const findUserByEmail = function (email) {
+  for(const id in userData){
+    const user = userData[id];
+    if(user.email === email){
+      return user
+    }
+  }
+  return null
+}

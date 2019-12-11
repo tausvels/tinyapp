@@ -17,12 +17,13 @@
     <title>User Registration</title>
   </head>
   <body>
-    <%- include("./partials/_header") %>
+    
     <main style="margin: 1em;">
       
       <form method="POST" action="/register">
-        <input type="email" name="email" placeholder="Email Address..."> />
-        <input type="password" name="password" placeholder="Enter Password"> />
+        <input type="email" name="email" placeholder="Email Address..." />
+        <input type="password" name="password" placeholder="Enter Password" />
+        <button type="submit" class="btn btn-primary">Submit</button>
       </form>
     
     </main>
