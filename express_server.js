@@ -27,10 +27,13 @@ server.get("/urls", (req, res) => {
   res.render("urls_index", templateVars);
 });
 server.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  const username = req.cookies["username"];
+  const templateVars = {username: username};
+  res.render("urls_new", templateVars);
 });
 server.get("/urls/:shortURL", (req, res) => {
-  const templateVars = {shortURL: req.params.shortURL, longURL:urlDatabase[req.params.shortURL], username: req.cookies[`username`]};
+  const username = req.cookies["username"];
+  const templateVars = {shortURL: req.params.shortURL, longURL:urlDatabase[req.params.shortURL], username: username};
   res.render("urls_show", templateVars);
 });
 server.get("/u/:shortURL", (req, res) => {
