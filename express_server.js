@@ -16,6 +16,10 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 // ------- GET REQUESTS ----------------
+// ------- GET REQUEST USER REGISTRATION -------
+server.get("/user_registration", (req, res) => {
+  res.render(`user_registration`);
+})
 server.get("/urls.json", (req, res) => {
   //res.send(`<h1>Server says Hi! from port: ${port}</h1>`);
   res.json(urlDatabase);
