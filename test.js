@@ -15,6 +15,12 @@ const users = {
     password: "something"
   }
 }
+const urlDatabase = {
+  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
+  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" },
+  Aswq7t: { longURL: "https://www.facebook.ca", userID: "ty75wq" },
+  lk7b90: { longURL: "https://www.instagram.ca", userID: "c54eT1" }
+};
 
 const findUserByEmail = function (queryParam, database) {
   for(const id in database){
@@ -32,18 +38,16 @@ const findUserById = function (queryParam, database) {
   }
   return null
 }
-const queryParam = "user2@example.com", queryParam2 = "SYRsGE";
-const output = (findUserByEmail(queryParam, users));
-const output2 = findUserById(queryParam2, users);
+// const queryParam = "user2@example.com";
+// const queryParam2 = "ty75wq";
+// const output = (findUserByEmail(queryParam, users));
+// const output2 = findUserById(queryParam2, urlDatabase);
 //findUserByEmail(queryParam);
-console.log(output.email);
-console.log(output2)
-const urlDatabase = {
-  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
-  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" },
-  Aswq7t: { longURL: "https://www.facebook.ca", userID: "ty75wq" },
-  lk7b90: { longURL: "https://www.instagram.ca", userID: "c54eT1" }
-};
+
+const enteredEmail = "user2@example.com";
+const found = findUserByEmail(enteredEmail, users).password;
+console.log(found) 
+
 
 // const urlsForUser = function (id) {
 //   for (const shortCode in urlDatabase) {

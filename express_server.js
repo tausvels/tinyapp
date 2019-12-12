@@ -35,7 +35,7 @@ server.post(`/register`, (req, res) => {
   const password = req.body.password;
   const hashedPassword = bcrypt.hashSync(password, 10);
   if (email !== "" && password !== "") {
-    if (!findUserByProp(email)) {
+    if (!findUserByEmail(email)) {
       userData[id] = {
         id: id,
         email: email,
@@ -60,10 +60,9 @@ server.get(`/login`, (req, res) => {
 //-----POST: REQUESTS LOGIN------////
 server.post(`/login`, (req, res) => {
   const enteredEmail = req.body.email;
-  const enteredPassword = req.body.password;
-  if (findUserByProp(enteredEmail) && bcrypt.compareSync(enteredPassword, (findUserByProp(enteredEmail)).password)) {
-    const userId = (findUserByProp(enteredEmail)).id;
-    //res.cookie(`user_id`, userId);
+  const enteredPassword = req.body.password; //console.log(findUserByEmail(email));
+  if (findUserByEmail(enteredEmail, userData) && bcrypt.compareSync(enteredPassword, findUserByEmail(enteredEmail, userData).password)) {
+    const userId = findUserByEmail(enteredEmail, userData).id;
     req.session.user_id = userId;
     res.redirect(`/urls`);
   } else {
@@ -83,7 +82,7 @@ server.post(`/logout`, (req, res) => {
 // ---GET: RENDERS (URLS_INDEX PAGE) ---- //
 server.get("/urls", (req, res) => {
   const user_id = req.session.user_id;
-  const userObj = findUserByProp(user_id);
+  const userObj = findUserById(user_id, userData);
   const templateVars = {urlDatabase: urlDatabase, userObj: userObj, user_id: user_id};
   res.render("urls_index", templateVars);
 });
@@ -92,7 +91,7 @@ server.get("/urls", (req, res) => {
 server.get("/urls/new", (req, res) => {
   const user_id = req.session.user_id;
   if (user_id) {
-    const userObj = findUserByProp(user_id);
+    const userObj = findUserById(user_id, userData);
     const templateVars = {userObj: userObj};
     res.render("urls_new", templateVars);
   } else {
@@ -106,7 +105,7 @@ server.get("/urls/:shortURL", (req, res) => {
   if (user_id) {
     const shortURL = req.params.shortURL;
     const longURL = urlDatabase[shortURL].longURL;
-    const userObj = findUserByProp(user_id);
+    const userObj = findUserById(user_id, userData);
     const templateVars = {shortURL: shortURL, longURL:longURL, userObj: userObj};
     res.render("urls_show", templateVars);
   } else {
@@ -127,8 +126,7 @@ server.get("/u/:shortURL", (req, res) => {
 //---POST: REDIRECT AFTER CREATE NEW TINY URL ---- ///
 server.post(`/urls`, (req, res) => {
   const longURL = "http://" + req.body.longURL;
-  const user_id = req.session.user_id; //req.cookies["user_id"];
-  //console.log("ONLY LONG URL ==>",longURL);
+  const user_id = req.session.user_id;
   const shortURL = generateRandomString();
   urlDatabase[shortURL] = {
     longURL: longURL,
@@ -137,14 +135,13 @@ server.post(`/urls`, (req, res) => {
   res.redirect(`/urls/${shortURL}`);
 });
 
-//-----GET: EDIT GET REQUEST ----- //
+//-----GET: FOR EDIT GET REQUEST ----- //
 server.get(`/urls/edit/:shortURL`, (req, res) => {
-  const user_id = req.session.user_id; // req.cookies["user_id"];
+  const user_id = req.session.user_id;
   if (user_id) {
     const shortURL = req.params.shortURL;
     const longURL = urlDatabase[shortURL].longURL;
-    //const user_id = user_id; //req.cookies["user_id"];  <---- Redundant code
-    const userObj = findUserByProp(user_id);
+    const userObj = findUserById(user_id, userData);
     const templateVars = {
       shortCode: shortURL,
       longCode: longURL,
@@ -156,7 +153,7 @@ server.get(`/urls/edit/:shortURL`, (req, res) => {
     res.redirect(`/login`);
   }
 });
-//---POSR: FOR EDIT POST REQUEST ------- //
+//---POST: FOR EDIT POST REQUEST ------- //
 server.post(`/urls/:shortURL`, (req, res) => {
   const editedURL = {
     shortURL: req.params.shortURL,
@@ -169,7 +166,7 @@ server.post(`/urls/:shortURL`, (req, res) => {
 
 //----POST: FOR DELETE ---------- //
 server.post(`/urls/:shortURL/delete`, (req, res) => {
-  const user_id = req.session.user_id; // req.cookies["user_id"];
+  const user_id = req.session.user_id;
   if (user_id) {
     let shortCode = req.params.shortURL;
     delete urlDatabase[shortCode];
@@ -215,3 +212,12 @@ const findUserByEmail = function(queryParam, database) {
   }
   return null;
 };
+
+const findUserById = function (queryParam, database) {
+  for(const id in database){
+    if (database[id].id === queryParam){
+      return database[id]
+    }
+  }
+  return null
+}
