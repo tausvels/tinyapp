@@ -16,21 +16,28 @@ const users = {
   }
 }
 
-const findUserByEmail = function (queryParam) {
-  for(const id in users){
-    const user = users[id];
-    for (let props in user) {
-      if(user[props] === queryParam){
-        return user;
-      }
+const findUserByEmail = function (queryParam, database) {
+  for(const id in database){
+    if (database[id].email === queryParam){
+      return database[id]
     }
   }
   return null
 }
-// const queryParam = "SYRsGE";
-// const output = (findUserByEmail(queryParam));
-// console.log(output.email)
-
+const findUserById = function (queryParam, database) {
+  for(const id in database){
+    if (database[id].id === queryParam){
+      return database[id]
+    }
+  }
+  return null
+}
+const queryParam = "user2@example.com", queryParam2 = "SYRsGE";
+const output = (findUserByEmail(queryParam, users));
+const output2 = findUserById(queryParam2, users);
+//findUserByEmail(queryParam);
+console.log(output.email);
+console.log(output2)
 const urlDatabase = {
   b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
   i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" },
@@ -50,9 +57,3 @@ const urlDatabase = {
 //   }
 // }
 // urlsForUser("aJ48lW");
-
-const bcrypt = require("bcrypt");
-const password = "purple-monkey-dinosaur"; // found in the req.params object
-const hashedPassword = bcrypt.hashSync(password, 10);
-
-const status = bcrypt.compareSync("purple-monkey-dinosaur", hashedPassword);
