@@ -38,16 +38,21 @@ const urlDatabase = {
   lk7b90: { longURL: "https://www.instagram.ca", userID: "c54eT1" }
 };
 
-const urlsForUser = function (id) {
-  for (const shortCode in urlDatabase) {
-    const shortDatabase = urlDatabase[shortCode];
-    if (urlDatabase[shortCode].userID === id) {
-      console.log("Short Code ==> ",shortCode)
-      console.log("Long Code ==> ", urlDatabase[shortCode].longURL)
-      console.log("UserID ==> ", urlDatabase[shortCode].userID);
-    }
-    //console.log(urlDatabase[shortCode].userID)
-  }
-}
-urlsForUser("aJ48lW");
+// const urlsForUser = function (id) {
+//   for (const shortCode in urlDatabase) {
+//     const shortDatabase = urlDatabase[shortCode];
+//     if (urlDatabase[shortCode].userID === id) {
+//       console.log("Short Code ==> ",shortCode)
+//       console.log("Long Code ==> ", urlDatabase[shortCode].longURL)
+//       console.log("UserID ==> ", urlDatabase[shortCode].userID);
+//     }
+//     //console.log(urlDatabase[shortCode].userID)
+//   }
+// }
+// urlsForUser("aJ48lW");
 
+const bcrypt = require("bcrypt");
+const password = "purple-monkey-dinosaur"; // found in the req.params object
+const hashedPassword = bcrypt.hashSync(password, 10);
+
+const status = bcrypt.compareSync("purple-monkey-dinosaur", hashedPassword);

@@ -3,6 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
 const cookieSession = require('cookie-session');
+const bcrypt = require("bcrypt");
 
 const userData = {};
 const port = 8080;
@@ -78,12 +79,13 @@ server.post(`/register`, (req, res) => {
   const id = generateRandomString();
   const email = req.body.email;
   const password = req.body.password;
+  const hashedPassword = bcrypt.hashSync(password, 10);
   if (email !== "" && password !== ""){
     if (!findUserByProp(email)){ // if returns false/null
       userData[id] = {
         id: id,
         email: email,
-        password: password
+        password: hashedPassword
       }
       res.cookie(`user_id`, id);
       console.log(userData);
@@ -102,11 +104,11 @@ server.post(`/login`, (req, res) => {
   const enteredEmail = req.body.email;
   const enteredPassword = req.body.password;
   console.log(enteredEmail);
-  if(findUserByProp(enteredEmail) && (findUserByProp(enteredEmail)).password === enteredPassword){
+  if(findUserByProp(enteredEmail) && bcrypt.compareSync(enteredPassword, (findUserByProp(enteredEmail)).password)){
       const userId = (findUserByProp(enteredEmail)).id;
       res.cookie(`user_id`, userId);
       res.redirect(`/urls`);
-  }else{
+  } else {
     res.status(403)
     .send(`${res.statusCode}`);
     //res.render('login', { error: `INCORRECT EMAIL OR PASSWORD!`})  ==> Returns on the login page for incorrect data
