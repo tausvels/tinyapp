@@ -21,32 +21,12 @@ const urlDatabase = {
   Aswq7t: { longURL: "https://www.facebook.ca", userID: "ty75wq" },
   lk7b90: { longURL: "https://www.instagram.ca", userID: "c54eT1" }
 };
+const helperFunctions = require("./helperFunctions");
 
-const findUserByEmail = function (queryParam, database) {
-  for(const id in database){
-    if (database[id].email === queryParam){
-      return database[id]
-    }
-  }
-  return null
-}
-const findUserById = function (queryParam, database) {
-  for(const id in database){
-    if (database[id].id === queryParam){
-      return database[id]
-    }
-  }
-  return null
-}
-// const queryParam = "user2@example.com";
-// const queryParam2 = "ty75wq";
-// const output = (findUserByEmail(queryParam, users));
-// const output2 = findUserById(queryParam2, urlDatabase);
-//findUserByEmail(queryParam);
+const output = helperFunctions.findUserByEmail("whatever@email.com", users); console.log(output)
 
-const enteredEmail = "user2@example.com";
-const found = findUserByEmail(enteredEmail, users).password;
-console.log(found) 
+
+
 
 
 // const urlsForUser = function (id) {

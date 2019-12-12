@@ -3,6 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cookieSession = require('cookie-session');
 const bcrypt = require("bcrypt");
+const helperFunctions = require("./helperFunctions");
 
 const userData = {};
 const urlDatabase = {
@@ -30,12 +31,12 @@ server.get("/register", (req, res) => {
 });
 //-----POST: REQUESTS USER REGISTRATION ------ //
 server.post(`/register`, (req, res) => {
-  const id = generateRandomString();
+  const id = helperFunctions.generateRandomString();
   const email = req.body.email;
   const password = req.body.password;
   const hashedPassword = bcrypt.hashSync(password, 10);
   if (email !== "" && password !== "") {
-    if (!findUserByEmail(email)) {
+    if (!helperFunctions.findUserByEmail(email)) {
       userData[id] = {
         id: id,
         email: email,
@@ -60,9 +61,9 @@ server.get(`/login`, (req, res) => {
 //-----POST: REQUESTS LOGIN------////
 server.post(`/login`, (req, res) => {
   const enteredEmail = req.body.email;
-  const enteredPassword = req.body.password; //console.log(findUserByEmail(email));
-  if (findUserByEmail(enteredEmail, userData) && bcrypt.compareSync(enteredPassword, findUserByEmail(enteredEmail, userData).password)) {
-    const userId = findUserByEmail(enteredEmail, userData).id;
+  const enteredPassword = req.body.password;
+  if (helperFunctions.findUserByEmail(enteredEmail, userData) && bcrypt.compareSync(enteredPassword, helperFunctions.findUserByEmail(enteredEmail, userData).password)) {
+    const userId = helperFunctions.findUserByEmail(enteredEmail, userData).id;
     req.session.user_id = userId;
     res.redirect(`/urls`);
   } else {
@@ -82,7 +83,7 @@ server.post(`/logout`, (req, res) => {
 // ---GET: RENDERS (URLS_INDEX PAGE) ---- //
 server.get("/urls", (req, res) => {
   const user_id = req.session.user_id;
-  const userObj = findUserById(user_id, userData);
+  const userObj = helperFunctions.findUserById(user_id, userData);
   const templateVars = {urlDatabase: urlDatabase, userObj: userObj, user_id: user_id};
   res.render("urls_index", templateVars);
 });
@@ -91,7 +92,7 @@ server.get("/urls", (req, res) => {
 server.get("/urls/new", (req, res) => {
   const user_id = req.session.user_id;
   if (user_id) {
-    const userObj = findUserById(user_id, userData);
+    const userObj = helperFunctions.findUserById(user_id, userData);
     const templateVars = {userObj: userObj};
     res.render("urls_new", templateVars);
   } else {
@@ -105,7 +106,7 @@ server.get("/urls/:shortURL", (req, res) => {
   if (user_id) {
     const shortURL = req.params.shortURL;
     const longURL = urlDatabase[shortURL].longURL;
-    const userObj = findUserById(user_id, userData);
+    const userObj = helperFunctions.findUserById(user_id, userData);
     const templateVars = {shortURL: shortURL, longURL:longURL, userObj: userObj};
     res.render("urls_show", templateVars);
   } else {
@@ -116,10 +117,7 @@ server.get("/urls/:shortURL", (req, res) => {
 // ---GET: REQUEST TO SEND PUBLIC TO THE LONG-URL LINK HELD BY SHORT-URL --- //
 server.get("/u/:shortURL", (req, res) => {
   const shortURL = req.params.shortURL;
-  console.log("short", shortURL);
   const longURL = urlDatabase[shortURL].longURL;
-  console.log("long", longURL);
-  console.log("before redirect");
   res.redirect(longURL);
 });
 
@@ -127,7 +125,7 @@ server.get("/u/:shortURL", (req, res) => {
 server.post(`/urls`, (req, res) => {
   const longURL = "http://" + req.body.longURL;
   const user_id = req.session.user_id;
-  const shortURL = generateRandomString();
+  const shortURL = helperFunctions.generateRandomString();
   urlDatabase[shortURL] = {
     longURL: longURL,
     userID: user_id
@@ -141,7 +139,7 @@ server.get(`/urls/edit/:shortURL`, (req, res) => {
   if (user_id) {
     const shortURL = req.params.shortURL;
     const longURL = urlDatabase[shortURL].longURL;
-    const userObj = findUserById(user_id, userData);
+    const userObj = helperFunctions.findUserById(user_id, userData);
     const templateVars = {
       shortCode: shortURL,
       longCode: longURL,
@@ -160,7 +158,6 @@ server.post(`/urls/:shortURL`, (req, res) => {
     longUrl: req.body.longURL
   };
   urlDatabase[editedURL.shortURL].longURL = "https://" + editedURL.longUrl;
-  console.log("AFTER EDIT", urlDatabase);
   res.redirect("/urls/");
 });
 
@@ -180,44 +177,3 @@ server.post(`/urls/:shortURL/delete`, (req, res) => {
 server.listen(port, () => {
   console.log(`Server listening to port: ${port}`);
 });
-
-// -------- HELPER FUNCTION ------------- //
-const generateRandomString = function() {
-  const charsArr = ("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789").split("");
-  const charsToGenerate = 6;
-  let randString = [];
-  for (let i = 0; i < charsToGenerate; i++) {
-    let randNumber = Math.floor(Math.random() * 61);
-    randString.push(charsArr[randNumber]);
-  }
-  return randString.join("");
-};
-
-const findUserByProp = function(queryParam) {
-  for (const id in userData) {
-    const user = userData[id];
-    for (let props in user) {
-      if (user[props] === queryParam) {
-        return user;
-      }
-    }
-  }
-  return null;
-};
-const findUserByEmail = function(queryParam, database) {
-  for (const id in database) {
-    if (database[id].email === queryParam) {
-      return database[id];
-    }
-  }
-  return null;
-};
-
-const findUserById = function (queryParam, database) {
-  for(const id in database){
-    if (database[id].id === queryParam){
-      return database[id]
-    }
-  }
-  return null
-}
