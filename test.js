@@ -22,8 +22,10 @@ const urlDatabase = {
   lk7b90: { longURL: "https://www.instagram.ca", userID: "c54eT1" }
 };
 const helperFunctions = require("./helperFunctions");
+const { findUserByEmail } = require("./helperFunctions");
 
-const output = helperFunctions.findUserByEmail("whatever@email.com", users); console.log(output)
+//const output = helperFunctions.findUserByEmail("whatever@email.com", users); console.log(output)
+//console.log(findUserByEmail("whatever@email.com", users));
 
 
 

@@ -62,8 +62,10 @@ server.get(`/login`, (req, res) => {
 server.post(`/login`, (req, res) => {
   const enteredEmail = req.body.email;
   const enteredPassword = req.body.password;
-  if (helperFunctions.findUserByEmail(enteredEmail, userData) && bcrypt.compareSync(enteredPassword, helperFunctions.findUserByEmail(enteredEmail, userData).password)) {
-    const userId = helperFunctions.findUserByEmail(enteredEmail, userData).id;
+  const user = helperFunctions.findUserByEmail(enteredEmail, userData);
+  
+  if (user && bcrypt.compareSync(enteredPassword, user.password)) {
+    const userId = user.id;
     req.session.user_id = userId;
     res.redirect(`/urls`);
   } else {
