@@ -27,6 +27,27 @@ const findUserByEmail = function (queryParam) {
   }
   return null
 }
-const queryParam = "SYRsGE";
-const output = (findUserByEmail(queryParam));
-console.log(output.email)
+// const queryParam = "SYRsGE";
+// const output = (findUserByEmail(queryParam));
+// console.log(output.email)
+
+const urlDatabase = {
+  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
+  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" },
+  Aswq7t: { longURL: "https://www.facebook.ca", userID: "ty75wq" },
+  lk7b90: { longURL: "https://www.instagram.ca", userID: "c54eT1" }
+};
+
+const urlsForUser = function (id) {
+  for (const shortCode in urlDatabase) {
+    const shortDatabase = urlDatabase[shortCode];
+    if (urlDatabase[shortCode].userID === id) {
+      console.log("Short Code ==> ",shortCode)
+      console.log("Long Code ==> ", urlDatabase[shortCode].longURL)
+      console.log("UserID ==> ", urlDatabase[shortCode].userID);
+    }
+    //console.log(urlDatabase[shortCode].userID)
+  }
+}
+urlsForUser("aJ48lW");
+

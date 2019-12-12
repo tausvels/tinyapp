@@ -2,7 +2,7 @@ console.clear();
 const express = require("express");
 const bodyParser = require("body-parser");
 const cookieParser = require('cookie-parser');
-
+const cookieSession = require('cookie-session');
 
 const userData = {};
 const port = 8080;
@@ -11,10 +11,19 @@ const server = express();
 server.set("view engine", "ejs"); //Setting up the server view engine to use ejs.
 server.use(bodyParser.urlencoded({extended: true}));
 server.use(cookieParser());
+// server.use(cookieSession({
+//   name: 'session',
+//   keys: [/* secret keys */],
+
+//   // Cookie Options
+//   maxAge: 24 * 60 * 60 * 1000 // 24 hours
+// }))
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
+  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" },
+  Aswq7t: { longURL: "https://www.facebook.ca", userID: "ty75wq" },
+  lk7b90: { longURL: "https://www.instagram.ca", userID: "c54eT1" }
 };
 // ------- GET REQUESTS ----------------
 // ------- GET REQUEST USER REGISTRATION -------
@@ -30,28 +39,39 @@ server.get("/urls", (req, res) => {
   const user_id = req.cookies["user_id"];
   const userObj = findUserByProp(user_id);
   console.log(userObj);
-  const templateVars = {urls: urlDatabase, userObj: userObj};
+  const templateVars = {urlDatabase: urlDatabase, userObj: userObj, user_id: user_id};
   console.log(userObj);
   res.render("urls_index", templateVars);
 });
 server.get("/urls/new", (req, res) => {
   const user_id = req.cookies["user_id"];
-  const userObj = findUserByProp(user_id);
+  if (user_id) {
+    const userObj = findUserByProp(user_id);
   //const username = req.cookies["username"];
-  const templateVars = {userObj: userObj};
+  const templateVars = {userObj: userObj}; // vars used by _header
   res.render("urls_new", templateVars);
+  } else {
+    res.redirect(`/login`);
+  }  
 });
 server.get("/urls/:shortURL", (req, res) => {
   const user_id = req.cookies["user_id"];
-  const userObj = findUserByProp(user_id);
-  //const username = req.cookies["username"];
-  const templateVars = {shortURL: req.params.shortURL, longURL:urlDatabase[req.params.shortURL], userObj: userObj};
-  res.render("urls_show", templateVars);
+  if (user_id) {
+    const shortURL = req.params.shortURL;
+    const longURL = urlDatabase[shortURL].longURL;
+    const userObj = findUserByProp(user_id);
+    //const username = req.cookies["username"];
+    const templateVars = {shortURL: shortURL, longURL:longURL, userObj: userObj};
+    res.render("urls_show", templateVars);
+  } else {
+    res.redirect(`/login`);
+  }
+  
 });
 server.get("/u/:shortURL", (req, res) => {
-  const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL];
-  res.redirect(longURL);
+    const shortURL = req.params.shortURL;
+    const longURL = urlDatabase[shortURL].longURL;
+    res.redirect(longURL);
 });
 //----- POST REQUESTS REGISTER------//
 server.post(`/register`, (req, res) => {
@@ -95,29 +115,36 @@ server.post(`/login`, (req, res) => {
 //----- POST REQUESTS LOGOUT------////
 server.post(`/logout`, (req, res) => {
   res.clearCookie(`user_id`);
-  res.redirect(`/urls`);
+  res.redirect(`/login`);
 })
 //----- POST REDIRECT AFTER CREATE NEW TINY URL ---- ///
 server.post(`/urls`, (req, res) => {
   const longURL = "http://" + req.body.longURL;
+  const user_id = req.cookies["user_id"];
   //console.log("ONLY LONG URL ==>",longURL);
   const shortURL = generateRandomString();
-  urlDatabase[shortURL] = longURL;
+  urlDatabase[shortURL] = {
+    longURL: longURL,
+    userID: user_id
+  };
   res.redirect(`/urls/${shortURL}`);
 });
 // FOR EDIT GET REQUEST//
 server.get(`/urls/edit/:shortURL`, (req, res) => {
-  const shortURL = req.params.shortURL;
-  const longURL = urlDatabase[shortURL];
   const user_id = req.cookies["user_id"];
-  const userObj = findUserByProp(user_id);
-  const templateVars = {
-    shortCode: shortURL,
-    longCode: longURL,
-    user_id: req.cookies[`user_id`],
-    userObj: userObj
-  };
-  res.render(`urls_edit`, templateVars);
+  if (user_id) {
+    const shortURL = req.params.shortURL;
+    const longURL = urlDatabase[shortURL].longURL;
+    const user_id = req.cookies["user_id"];
+    const userObj = findUserByProp(user_id);
+    const templateVars = {
+      shortCode: shortURL,
+      longCode: longURL,
+      user_id: user_id,
+      userObj: userObj
+    };
+    res.render(`urls_edit`, templateVars);
+  }  
 });
 // FOR EDIT POST REQUEST
 server.post(`/urls/:shortURL`, (req, res) => {
@@ -125,14 +152,19 @@ server.post(`/urls/:shortURL`, (req, res) => {
     shortURL: req.params.shortURL,
     longUrl: req.body.longURL
   };
-    urlDatabase[editedURL.shortURL] = editedURL.longUrl;
+    urlDatabase[editedURL.shortURL].longURL = editedURL.longUrl;
     res.redirect("/urls/");
 });
 // FOR DELETE //
 server.post(`/urls/:shortURL/delete`, (req, res) => {
-  let shortCode = req.params.shortURL;
-  delete urlDatabase[shortCode];
-  res.redirect(`/urls`);
+  const user_id = req.cookies["user_id"];
+  if (user_id) {
+    let shortCode = req.params.shortURL;
+    delete urlDatabase[shortCode];
+    res.redirect(`/urls`);
+  } else { 
+    res.redirect(`/login`)
+  }
 });
 
 server.listen(port, () => {
