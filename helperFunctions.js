@@ -30,47 +30,47 @@ const findUserByEmail = function(queryParam, database) {
   return null;
 };
 
-const findUserById = function (queryParam, database) {
-  for(const id in database){
-    if (database[id].id === queryParam){
-      return database[id]
+const findUserById = function(queryParam, database) {
+  for (const id in database) {
+    if (database[id].id === queryParam) {
+      return database[id];
     }
   }
-  return null
-}
+  return null;
+};
 
-const sanitizeURL = function (url){
+const sanitizeURL = function(url) {
   const temp = url;
   let output;
   let expression = /(https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|www\.[a-zA-Z0-9][a-zA-Z0-9-]+[a-zA-Z0-9]\.[^\s]{2,}|https?:\/\/(?:www\.|(?!www))[a-zA-Z0-9]+\.[^\s]{2,}|www\.[a-zA-Z0-9]+\.[^\s]{2,})/gi;
   let regex = new RegExp(expression);
 
-  if (!temp.match(regex)){
-    output = "https://www."+temp;
+  if (!temp.match(regex)) {
+    output = "https://www." + temp;
   } else {
     output = temp;
   }
   return output;
-}
+};
 
-const createDate = function () {
+const createDate = function() {
   let today = new Date();
   const dd = String(today.getDate()).padStart(2, '0');
   const mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
   const yyyy = today.getFullYear();
   return today = `${mm}/${dd}/${yyyy}`;
-}
+};
 
-const createTime = function () {
+const createTime = function() {
   let time = new Date();
   const hh = time.getHours();
   const mm = time.getMinutes();
   return time = `${hh}:${mm}`;
-}
+};
 //console.log(createDate()); console.log(createTime());
 module.exports = {
   generateRandomString,
-  findUserByProp,
+  findUserByProp, // <-- Not Using this function but very helpful
   findUserByEmail,
   findUserById,
   sanitizeURL,

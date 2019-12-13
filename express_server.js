@@ -77,7 +77,7 @@ server.post(`/login`, (req, res) => {
   } else {
     res.status(403)
       .send(`${res.statusCode}`);
-      //I really like the code below but it goes against what the instruction for the project is.
+    //I really like the code below but it goes against what the instruction for the project is.
     //res.render('login', { error: `INCORRECT EMAIL OR PASSWORD!`})  ==> Returns on the login page for incorrect data
   }
 });
@@ -91,7 +91,7 @@ server.post(`/logout`, (req, res) => {
 // ---GET: RENDERS (URLS_INDEX PAGE) ---- //
 server.get("/urls", (req, res) => {
   const user_id = req.session.user_id;
-  if (helperFunctions.findUserById(user_id, userData)){
+  if (helperFunctions.findUserById(user_id, userData)) {
     const userObj = helperFunctions.findUserById(user_id, userData);
     const templateVars = {urlDatabase: urlDatabase, userObj: userObj, user_id: user_id};
     res.render("urls_index", templateVars);
@@ -117,15 +117,15 @@ server.get("/urls/:shortURL", (req, res) => {
   const user_id = req.session.user_id;
   if (user_id) {
     const shortURL = req.params.shortURL;
-    if(urlDatabase[shortURL]){
+    if (urlDatabase[shortURL]) {
       const longURL = urlDatabase[shortURL].longURL;
       const userObj = helperFunctions.findUserById(user_id, userData);
       const templateVars = {shortURL: shortURL, longURL:longURL, userObj: userObj};
       res.render("urls_show", templateVars);
     } else {
       res.status(403)
-      .send(`${res.statusCode}`);
-    }    
+        .send(`${res.statusCode}`);
+    }
   } else {
     res.redirect(`/login`);
   }
@@ -157,7 +157,7 @@ server.get(`/urls/edit/:shortURL`, (req, res) => {
   const user_id = req.session.user_id;
   if (user_id) {
     const shortURL = req.params.shortURL;
-    if (urlDatabase[shortURL]){
+    if (urlDatabase[shortURL]) {
       const longURL = urlDatabase[shortURL].longURL;
       const userObj = helperFunctions.findUserById(user_id, userData);
       const templateVars = {
@@ -169,7 +169,7 @@ server.get(`/urls/edit/:shortURL`, (req, res) => {
       res.render(`urls_edit`, templateVars);
     } else {
       res.status(403)
-      .send(`${res.statusCode}`);
+        .send(`${res.statusCode}`);
     }
   } else {
     res.redirect(`/login`);
