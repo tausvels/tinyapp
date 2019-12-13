@@ -20,9 +20,12 @@
     <%- include("./partials/_header") %>
     <main style="margin: 1em;">
       
-      <form method="POST" action="/register">
-        <input type="email" name="email" placeholder="Email Address..."> />
-        <input type="password" name="password" placeholder="Enter Password"> />
+      <form class="form-registration" method="POST" action="/register" style="display: flex; flex-direction: column; width: 50%; margin: auto;">
+        <label style="font-size: 18px;"><b>Enter Email</b></label>
+        <input class="form-control" type="email" name="email" placeholder="Email Address..." style="margin-bottom: 10px;" />
+        <label style="font-size: 18px;"><b>Enter Password</b></label>
+        <input class="form-control" type="password" name="password" placeholder="Enter Password" />
+        <button type="submit" class="btn btn-danger btn-lg" style="display:flex; width: 50%; margin: auto; margin-top: 15px; justify-content: center;">Submit</button>
       </form>
     
     </main>
