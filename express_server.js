@@ -69,7 +69,6 @@ server.post(`/login`, (req, res) => {
   const enteredEmail = req.body.email;
   const enteredPassword = req.body.password;
   const user = helperFunctions.findUserByEmail(enteredEmail, userData);
-
   if (user && bcrypt.compareSync(enteredPassword, user.password)) {
     const userId = user.id;
     req.session.user_id = userId;

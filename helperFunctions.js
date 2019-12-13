@@ -46,7 +46,7 @@ const sanitizeURL = function(url) {
   let regex = new RegExp(expression);
 
   if (!temp.match(regex)) {
-    output = "https://www." + temp;
+    output = "https://" + temp;
   } else {
     output = temp;
   }

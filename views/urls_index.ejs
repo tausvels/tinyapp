@@ -35,7 +35,7 @@
           <% for(let shortCode in urlDatabase) { %>
             <% if(urlDatabase[shortCode].userID === user_id) { %>
               <tr>
-                <a><td><%= shortCode %></td></a>
+                <td><a href="/u/<%= shortCode %>"><%= shortCode %></a></td>
                 <td><%= urlDatabase[shortCode].longURL %></td>
                 <td><%= urlDatabase[shortCode].dateCreated %></td>
                 <td>
